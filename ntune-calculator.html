@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N-Tune UAN Cost Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px 20px 0 0;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .input-section {
+            background: white;
+            padding: 25px 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #4a5568;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 18px;
+            transition: all 0.3s;
+            -webkit-appearance: none;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .results-section {
+            background: white;
+            padding: 25px 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .result-card {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-card.baseline {
+            border-left-color: #48bb78;
+        }
+
+        .result-card h3 {
+            color: #2d3748;
+            font-size: 16px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .result-label {
+            color: #718096;
+        }
+
+        .result-value {
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .cost-highlight {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .footer {
+            background: white;
+            border-radius: 0 0 20px 20px;
+            padding: 20px;
+            text-align: center;
+            color: #718096;
+            font-size: 13px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 400px) {
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .input-group input {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌱 N-Tune UAN Calculator</h1>
+            <p>Compare costs with and without N-Tune</p>
+        </div>
+
+        <div class="input-section">
+            <div class="input-group">
+                <label for="uanPrice">UAN Sales Price ($/ton)</label>
+                <input type="number" id="uanPrice" value="420" step="1" min="0">
+            </div>
+
+            <div class="input-group">
+                <label for="gallons">Gallons of UAN</label>
+                <input type="number" id="gallons" value="30" step="0.1" min="0">
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="result-card baseline">
+                <h3>UAN Only (Baseline)</h3>
+                <div class="result-row">
+                    <span class="result-label">Cost:</span>
+                    <span class="result-value" id="uanCost">$0.00</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Lbs of N:</span>
+                    <span class="result-value" id="uanLbsN">0</span>
+                </div>
+                <div class="cost-highlight">
+                    <div style="font-size: 14px; margin-bottom: 4px;">Cost per lb N</div>
+                    <div id="uanCostPerN">$0.00</div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <h3>UAN + N-Tune (15 lbs N)</h3>
+                <div class="result-row">
+                    <span class="result-label">Gallons:</span>
+                    <span class="result-value" id="nt15gal">0</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Cost:</span>
+                    <span class="result-value" id="nt15cost">$0.00</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Lbs of N:</span>
+                    <span class="result-value" id="nt15lbsN">0</span>
+                </div>
+                <div class="cost-highlight">
+                    <div style="font-size: 14px; margin-bottom: 4px;">Cost per lb N</div>
+                    <div id="nt15costPerN">$0.00</div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <h3>UAN + N-Tune (20 lbs N)</h3>
+                <div class="result-row">
+                    <span class="result-label">Gallons:</span>
+                    <span class="result-value" id="nt20gal">0</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Cost:</span>
+                    <span class="result-value" id="nt20cost">$0.00</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Lbs of N:</span>
+                    <span class="result-value" id="nt20lbsN">0</span>
+                </div>
+                <div class="cost-highlight">
+                    <div style="font-size: 14px; margin-bottom: 4px;">Cost per lb N</div>
+                    <div id="nt20costPerN">$0.00</div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <h3>UAN + N-Tune (30 lbs N)</h3>
+                <div class="result-row">
+                    <span class="result-label">Gallons:</span>
+                    <span class="result-value" id="nt30gal">0</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Cost:</span>
+                    <span class="result-value" id="nt30cost">$0.00</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Lbs of N:</span>
+                    <span class="result-value" id="nt30lbsN">0</span>
+                </div>
+                <div class="cost-highlight">
+                    <div style="font-size: 14px; margin-bottom: 4px;">Cost per lb N</div>
+                    <div id="nt30costPerN">$0.00</div>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <h3>UAN + N-Tune (40 lbs N)</h3>
+                <div class="result-row">
+                    <span class="result-label">Gallons:</span>
+                    <span class="result-value" id="nt40gal">0</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Cost:</span>
+                    <span class="result-value" id="nt40cost">$0.00</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Lbs of N:</span>
+                    <span class="result-value" id="nt40lbsN">0</span>
+                </div>
+                <div class="cost-highlight">
+                    <div style="font-size: 14px; margin-bottom: 4px;">Cost per lb N</div>
+                    <div id="nt40costPerN">$0.00</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Updated automatically as you type
+        </div>
+    </div>
+
+    <script>
+        // Get input elements
+        const uanPriceInput = document.getElementById('uanPrice');
+        const gallonsInput = document.getElementById('gallons');
+
+        // Calculate and update results
+        function calculate() {
+            const uanPrice = parseFloat(uanPriceInput.value) || 0;
+            const gallons = parseFloat(gallonsInput.value) || 0;
+
+            // UAN Only calculations
+            const uanCost = ((uanPrice / 2000) * 11.1) * gallons;
+            const uanLbsN = (gallons * 11.1) * 0.32;
+            const uanCostPerN = uanLbsN > 0 ? uanCost / uanLbsN : 0;
+
+            // Update UAN Only
+            document.getElementById('uanCost').textContent = '$' + uanCost.toFixed(2);
+            document.getElementById('uanLbsN').textContent = uanLbsN.toFixed(1);
+            document.getElementById('uanCostPerN').textContent = '$' + uanCostPerN.toFixed(2);
+
+            // N-Tune calculations (all variants use same gallons formula but different N amounts)
+            const reducedGallons = gallons - 0.25;
+            const ntuneGallons = ((reducedGallons) * (uanCost / gallons)) + 8;
+
+            // 15 lbs N-Tune
+            const nt15LbsN = ((reducedGallons) * 11.1) * 0.32 + 15;
+            const nt15CostPerN = nt15LbsN > 0 ? ntuneGallons / nt15LbsN : 0;
+            document.getElementById('nt15gal').textContent = reducedGallons.toFixed(2) + ' + 1 qt';
+            document.getElementById('nt15cost').textContent = '$' + ntuneGallons.toFixed(2);
+            document.getElementById('nt15lbsN').textContent = nt15LbsN.toFixed(1);
+            document.getElementById('nt15costPerN').textContent = '$' + nt15CostPerN.toFixed(2);
+
+            // 20 lbs N-Tune
+            const nt20LbsN = ((reducedGallons) * 11.1) * 0.32 + 20;
+            const nt20CostPerN = nt20LbsN > 0 ? ntuneGallons / nt20LbsN : 0;
+            document.getElementById('nt20gal').textContent = reducedGallons.toFixed(2) + ' + 1 qt';
+            document.getElementById('nt20cost').textContent = '$' + ntuneGallons.toFixed(2);
+            document.getElementById('nt20lbsN').textContent = nt20LbsN.toFixed(1);
+            document.getElementById('nt20costPerN').textContent = '$' + nt20CostPerN.toFixed(2);
+
+            // 30 lbs N-Tune
+            const nt30LbsN = ((reducedGallons) * 11.1) * 0.32 + 30;
+            const nt30CostPerN = nt30LbsN > 0 ? ntuneGallons / nt30LbsN : 0;
+            document.getElementById('nt30gal').textContent = reducedGallons.toFixed(2) + ' + 1 qt';
+            document.getElementById('nt30cost').textContent = '$' + ntuneGallons.toFixed(2);
+            document.getElementById('nt30lbsN').textContent = nt30LbsN.toFixed(1);
+            document.getElementById('nt30costPerN').textContent = '$' + nt30CostPerN.toFixed(2);
+
+            // 40 lbs N-Tune
+            const nt40LbsN = ((reducedGallons) * 11.1) * 0.32 + 40;
+            const nt40CostPerN = nt40LbsN > 0 ? ntuneGallons / nt40LbsN : 0;
+            document.getElementById('nt40gal').textContent = reducedGallons.toFixed(2) + ' + 1 qt';
+            document.getElementById('nt40cost').textContent = '$' + ntuneGallons.toFixed(2);
+            document.getElementById('nt40lbsN').textContent = nt40LbsN.toFixed(1);
+            document.getElementById('nt40costPerN').textContent = '$' + nt40CostPerN.toFixed(2);
+        }
+
+        // Add event listeners
+        uanPriceInput.addEventListener('input', calculate);
+        gallonsInput.addEventListener('input', calculate);
+
+        // Initial calculation
+        calculate();
+    </script>
+</body>
+</html>
