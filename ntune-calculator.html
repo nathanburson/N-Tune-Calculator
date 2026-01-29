@@ -349,12 +349,13 @@
             const productPrice = parseFloat(productPriceInput.value) || 0;
             const gallons = parseFloat(gallonsInput.value) || 0;
             
-            // Nitrogen percentage based on mode
+            // Nitrogen percentage and weight based on mode
             const nitrogenPercent = currentMode === 'uan' ? 0.32 : 0.28;
+            const weight = currentMode === 'uan' ? 11.1 : 10.6;
 
             // Product Only calculations
-            const productCost = ((productPrice / 2000) * 11.1) * gallons;
-            const productLbsN = (gallons * 11.1) * nitrogenPercent;
+            const productCost = ((productPrice / 2000) * weight) * gallons;
+            const productLbsN = (gallons * weight) * nitrogenPercent;
             const productCostPerN = productLbsN > 0 ? productCost / productLbsN : 0;
 
             // Update Product Only
@@ -367,7 +368,7 @@
             const ntuneGallons = ((reducedGallons) * (productCost / gallons)) + 8;
 
             // 15 lbs N-Tune
-            const nt15LbsN = ((reducedGallons) * 11.1) * nitrogenPercent + 15;
+            const nt15LbsN = ((reducedGallons) * weight) * nitrogenPercent + 15;
             const nt15CostPerN = nt15LbsN > 0 ? ntuneGallons / nt15LbsN : 0;
             document.getElementById('nt15gal').textContent = reducedGallons.toFixed(2) + ' + 1 qt';
             document.getElementById('nt15cost').textContent = '$' + ntuneGallons.toFixed(2);
@@ -375,7 +376,7 @@
             document.getElementById('nt15costPerN').textContent = '$' + nt15CostPerN.toFixed(2);
 
             // 20 lbs N-Tune
-            const nt20LbsN = ((reducedGallons) * 11.1) * nitrogenPercent + 20;
+            const nt20LbsN = ((reducedGallons) * weight) * nitrogenPercent + 20;
             const nt20CostPerN = nt20LbsN > 0 ? ntuneGallons / nt20LbsN : 0;
             document.getElementById('nt20gal').textContent = reducedGallons.toFixed(2) + ' + 1 qt';
             document.getElementById('nt20cost').textContent = '$' + ntuneGallons.toFixed(2);
@@ -383,7 +384,7 @@
             document.getElementById('nt20costPerN').textContent = '$' + nt20CostPerN.toFixed(2);
 
             // 30 lbs N-Tune
-            const nt30LbsN = ((reducedGallons) * 11.1) * nitrogenPercent + 30;
+            const nt30LbsN = ((reducedGallons) * weight) * nitrogenPercent + 30;
             const nt30CostPerN = nt30LbsN > 0 ? ntuneGallons / nt30LbsN : 0;
             document.getElementById('nt30gal').textContent = reducedGallons.toFixed(2) + ' + 1 qt';
             document.getElementById('nt30cost').textContent = '$' + ntuneGallons.toFixed(2);
@@ -391,7 +392,7 @@
             document.getElementById('nt30costPerN').textContent = '$' + nt30CostPerN.toFixed(2);
 
             // 40 lbs N-Tune
-            const nt40LbsN = ((reducedGallons) * 11.1) * nitrogenPercent + 40;
+            const nt40LbsN = ((reducedGallons) * weight) * nitrogenPercent + 40;
             const nt40CostPerN = nt40LbsN > 0 ? ntuneGallons / nt40LbsN : 0;
             document.getElementById('nt40gal').textContent = reducedGallons.toFixed(2) + ' + 1 qt';
             document.getElementById('nt40cost').textContent = '$' + ntuneGallons.toFixed(2);
