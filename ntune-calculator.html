@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N-Tune UAN Cost Calculator</title>
+    <title>N-Tune Calculator</title>
     <style>
         * {
             margin: 0;
@@ -26,7 +26,7 @@
         .header {
             background: white;
             border-radius: 20px 20px 0 0;
-            padding: 30px 20px;
+            padding: 30px 20px 20px 20px;
             text-align: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
@@ -40,6 +40,35 @@
         .header p {
             color: #718096;
             font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .toggle-container {
+            display: flex;
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 4px;
+            margin: 0 auto;
+            max-width: 300px;
+        }
+
+        .toggle-button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            color: #4a5568;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-button.active {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
         }
 
         .input-section {
@@ -146,47 +175,61 @@
             .input-group input {
                 font-size: 16px;
             }
+
+            .toggle-button {
+                font-size: 14px;
+                padding: 10px 15px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🌱 N-Tune UAN Calculator</h1>
+            <h1>🌱 N-Tune Calculator</h1>
             <p>Compare costs with and without N-Tune</p>
+            
+            <div class="toggle-container">
+                <button class="toggle-button active" id="uanButton" onclick="switchMode('uan')">
+                    UAN (32-0-0)
+                </button>
+                <button class="toggle-button" id="product28Button" onclick="switchMode('28-0-0-5')">
+                    28-0-0-5
+                </button>
+            </div>
         </div>
 
         <div class="input-section">
             <div class="input-group">
-                <label for="uanPrice">UAN Sales Price ($/ton)</label>
-                <input type="number" id="uanPrice" value="420" step="1" min="0">
+                <label for="productPrice"><span id="productLabel">UAN</span> Sales Price ($/ton)</label>
+                <input type="number" id="productPrice" value="420" step="1" min="0">
             </div>
 
             <div class="input-group">
-                <label for="gallons">Gallons of UAN</label>
+                <label for="gallons">Gallons of <span id="productLabel2">UAN</span></label>
                 <input type="number" id="gallons" value="30" step="0.1" min="0">
             </div>
         </div>
 
         <div class="results-section">
             <div class="result-card baseline">
-                <h3>UAN Only (Baseline)</h3>
+                <h3><span id="productLabel3">UAN</span> Only (Baseline)</h3>
                 <div class="result-row">
                     <span class="result-label">Cost:</span>
-                    <span class="result-value" id="uanCost">$0.00</span>
+                    <span class="result-value" id="productCost">$0.00</span>
                 </div>
                 <div class="result-row">
                     <span class="result-label">Lbs of N:</span>
-                    <span class="result-value" id="uanLbsN">0</span>
+                    <span class="result-value" id="productLbsN">0</span>
                 </div>
                 <div class="cost-highlight">
                     <div style="font-size: 14px; margin-bottom: 4px;">Cost per lb N</div>
-                    <div id="uanCostPerN">$0.00</div>
+                    <div id="productCostPerN">$0.00</div>
                 </div>
             </div>
 
             <div class="result-card">
-                <h3>UAN + N-Tune (15 lbs N)</h3>
+                <h3><span id="productLabel4">UAN</span> + N-Tune (15 lbs N)</h3>
                 <div class="result-row">
                     <span class="result-label">Gallons:</span>
                     <span class="result-value" id="nt15gal">0</span>
@@ -206,7 +249,7 @@
             </div>
 
             <div class="result-card">
-                <h3>UAN + N-Tune (20 lbs N)</h3>
+                <h3><span id="productLabel5">UAN</span> + N-Tune (20 lbs N)</h3>
                 <div class="result-row">
                     <span class="result-label">Gallons:</span>
                     <span class="result-value" id="nt20gal">0</span>
@@ -226,7 +269,7 @@
             </div>
 
             <div class="result-card">
-                <h3>UAN + N-Tune (30 lbs N)</h3>
+                <h3><span id="productLabel6">UAN</span> + N-Tune (30 lbs N)</h3>
                 <div class="result-row">
                     <span class="result-label">Gallons:</span>
                     <span class="result-value" id="nt30gal">0</span>
@@ -246,7 +289,7 @@
             </div>
 
             <div class="result-card">
-                <h3>UAN + N-Tune (40 lbs N)</h3>
+                <h3><span id="productLabel7">UAN</span> + N-Tune (40 lbs N)</h3>
                 <div class="result-row">
                     <span class="result-label">Gallons:</span>
                     <span class="result-value" id="nt40gal">0</span>
@@ -273,30 +316,58 @@
 
     <script>
         // Get input elements
-        const uanPriceInput = document.getElementById('uanPrice');
+        const productPriceInput = document.getElementById('productPrice');
         const gallonsInput = document.getElementById('gallons');
+        
+        // Current mode
+        let currentMode = 'uan'; // 'uan' or '28-0-0-5'
+
+        // Switch between UAN and 28-0-0-5
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // Update button states
+            document.getElementById('uanButton').classList.toggle('active', mode === 'uan');
+            document.getElementById('product28Button').classList.toggle('active', mode === '28-0-0-5');
+            
+            // Update all labels
+            const productName = mode === 'uan' ? 'UAN' : '28-0-0-5';
+            document.getElementById('productLabel').textContent = productName;
+            document.getElementById('productLabel2').textContent = productName;
+            document.getElementById('productLabel3').textContent = productName;
+            document.getElementById('productLabel4').textContent = productName;
+            document.getElementById('productLabel5').textContent = productName;
+            document.getElementById('productLabel6').textContent = productName;
+            document.getElementById('productLabel7').textContent = productName;
+            
+            // Recalculate with new nitrogen percentage
+            calculate();
+        }
 
         // Calculate and update results
         function calculate() {
-            const uanPrice = parseFloat(uanPriceInput.value) || 0;
+            const productPrice = parseFloat(productPriceInput.value) || 0;
             const gallons = parseFloat(gallonsInput.value) || 0;
+            
+            // Nitrogen percentage based on mode
+            const nitrogenPercent = currentMode === 'uan' ? 0.32 : 0.28;
 
-            // UAN Only calculations
-            const uanCost = ((uanPrice / 2000) * 11.1) * gallons;
-            const uanLbsN = (gallons * 11.1) * 0.32;
-            const uanCostPerN = uanLbsN > 0 ? uanCost / uanLbsN : 0;
+            // Product Only calculations
+            const productCost = ((productPrice / 2000) * 11.1) * gallons;
+            const productLbsN = (gallons * 11.1) * nitrogenPercent;
+            const productCostPerN = productLbsN > 0 ? productCost / productLbsN : 0;
 
-            // Update UAN Only
-            document.getElementById('uanCost').textContent = '$' + uanCost.toFixed(2);
-            document.getElementById('uanLbsN').textContent = uanLbsN.toFixed(1);
-            document.getElementById('uanCostPerN').textContent = '$' + uanCostPerN.toFixed(2);
+            // Update Product Only
+            document.getElementById('productCost').textContent = '$' + productCost.toFixed(2);
+            document.getElementById('productLbsN').textContent = productLbsN.toFixed(1);
+            document.getElementById('productCostPerN').textContent = '$' + productCostPerN.toFixed(2);
 
             // N-Tune calculations (all variants use same gallons formula but different N amounts)
             const reducedGallons = gallons - 0.25;
-            const ntuneGallons = ((reducedGallons) * (uanCost / gallons)) + 8;
+            const ntuneGallons = ((reducedGallons) * (productCost / gallons)) + 8;
 
             // 15 lbs N-Tune
-            const nt15LbsN = ((reducedGallons) * 11.1) * 0.32 + 15;
+            const nt15LbsN = ((reducedGallons) * 11.1) * nitrogenPercent + 15;
             const nt15CostPerN = nt15LbsN > 0 ? ntuneGallons / nt15LbsN : 0;
             document.getElementById('nt15gal').textContent = reducedGallons.toFixed(2) + ' + 1 qt';
             document.getElementById('nt15cost').textContent = '$' + ntuneGallons.toFixed(2);
@@ -304,7 +375,7 @@
             document.getElementById('nt15costPerN').textContent = '$' + nt15CostPerN.toFixed(2);
 
             // 20 lbs N-Tune
-            const nt20LbsN = ((reducedGallons) * 11.1) * 0.32 + 20;
+            const nt20LbsN = ((reducedGallons) * 11.1) * nitrogenPercent + 20;
             const nt20CostPerN = nt20LbsN > 0 ? ntuneGallons / nt20LbsN : 0;
             document.getElementById('nt20gal').textContent = reducedGallons.toFixed(2) + ' + 1 qt';
             document.getElementById('nt20cost').textContent = '$' + ntuneGallons.toFixed(2);
@@ -312,7 +383,7 @@
             document.getElementById('nt20costPerN').textContent = '$' + nt20CostPerN.toFixed(2);
 
             // 30 lbs N-Tune
-            const nt30LbsN = ((reducedGallons) * 11.1) * 0.32 + 30;
+            const nt30LbsN = ((reducedGallons) * 11.1) * nitrogenPercent + 30;
             const nt30CostPerN = nt30LbsN > 0 ? ntuneGallons / nt30LbsN : 0;
             document.getElementById('nt30gal').textContent = reducedGallons.toFixed(2) + ' + 1 qt';
             document.getElementById('nt30cost').textContent = '$' + ntuneGallons.toFixed(2);
@@ -320,7 +391,7 @@
             document.getElementById('nt30costPerN').textContent = '$' + nt30CostPerN.toFixed(2);
 
             // 40 lbs N-Tune
-            const nt40LbsN = ((reducedGallons) * 11.1) * 0.32 + 40;
+            const nt40LbsN = ((reducedGallons) * 11.1) * nitrogenPercent + 40;
             const nt40CostPerN = nt40LbsN > 0 ? ntuneGallons / nt40LbsN : 0;
             document.getElementById('nt40gal').textContent = reducedGallons.toFixed(2) + ' + 1 qt';
             document.getElementById('nt40cost').textContent = '$' + ntuneGallons.toFixed(2);
@@ -329,7 +400,7 @@
         }
 
         // Add event listeners
-        uanPriceInput.addEventListener('input', calculate);
+        productPriceInput.addEventListener('input', calculate);
         gallonsInput.addEventListener('input', calculate);
 
         // Initial calculation
